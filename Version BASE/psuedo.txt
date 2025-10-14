@@ -1,0 +1,45 @@
+Make 3+ players work ///////////////
+
+add comments and code flow to make it easier to follow
+
+Make it possible to draw images to the screen easily:
+    sprite object???
+    attatch either sprite object or image to player object
+    animate????
+
+
+
+function keyHandler(e){  // simple but powerful
+
+  console.log("Keystate on method start:");
+  console.log(keyState)
+  console.log("")
+
+  const old = keyState[e.code] // Save old state
+
+  keyState[e.code] = e.type === "keydown"; // Store new state in keyState
+
+  console.log(`old: ${old} new: ${keyState[e.code]}`);
+
+  if (keyState[e.code] == old) { // Comparereturn
+    console.log("Ignored Key Press");
+    return; // if key didnt change, don't send update packet
+    // This code block is here incase there's ever a use for
+    // this condition.
+  } 
+  
+
+  console.log("Keystate on method send:");
+  console.log(keyState)
+  console.log("")
+
+  const send = {type: "update", keyState: keyState, name: game.name};
+
+  console.log("---")
+  console.log(`Sending update packet from ${game.name}`);
+  console.log(send)
+  console.log("---")
+  websocket.send(JSON.stringify(send));
+
+  
+}
