@@ -4,6 +4,9 @@ import asyncio
 import json
 import secrets
 import random
+import http
+import os
+import signal
 
 from websockets.asyncio.server import serve
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
@@ -20,7 +23,9 @@ TICK_INTERVAL = 0.01
 
 
 
-
+def health_check(connection, request):
+    if request.path == "/healthz":
+        return connection.respond(http.HTTPStatus.OK, "OK\n")
 
 # Sends error messages to the client to be handled
 async def error(websocket, message):
@@ -383,9 +388,16 @@ async def watch(websocket, watch_key):
 
 # Called first, opens server for websocket connections
 # Uses handler method for connections
+# OLD OLD OLD
+#async def main():
+#    async with serve(handler, "", 8001) as server:
+#        await server.serve_forever()
 async def main():
-    async with serve(handler, "", 8001) as server:
-        await server.serve_forever()
+    port = int(os.environ.get("PORT", "8001"))
+    async with serve(handler, "", port, process_request=health_check) as server:
+        loop = asyncio.get_running_loop()
+        loop.add_signal_handler(signal.SIGTERM, server.close)
+        await server.wait_closed()
 
 
 # ENTRANCE POINT
