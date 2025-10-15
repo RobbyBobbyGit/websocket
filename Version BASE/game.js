@@ -1,4 +1,4 @@
-import { Player } from '/Version BASE/player.js';
+import { Player } from 'websocket/Version BASE/player.js';
 
 
 const colors = ["red", "blue"]

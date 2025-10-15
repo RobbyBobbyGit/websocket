@@ -1,5 +1,5 @@
 
-import { Game } from '/Version BASE/game.js'
+import { Game } from 'websocket/Version BASE/game.js'
 
 
 let keyState = {};
