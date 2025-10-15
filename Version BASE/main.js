@@ -1,7 +1,7 @@
 
 import { Game } from '/game.js'
 
-export let websocket;
+
 let keyState = {};
 let numPlayers = 2;
 let names = ["Bob", "Hank", "Jasper", "Jack", "Kian"];
@@ -30,6 +30,18 @@ function init() {
     websocket.send(JSON.stringify(event));
   });
 }
+
+
+function getWebSocketServer() {
+  if (window.location.host === "RobbyBobbyGit.github.io") {
+    return "wss://unusual-dennie-webgame-f558b6c5.koyeb.app/";
+  } else if (window.location.host === "localhost:8000") {
+    return "ws://localhost:8001/";
+  } else {
+    throw new Error(`Unsupported host: ${window.location.host}`);
+  }
+}
+
 
 function showMessage(message) {
   //window.setTimeout(() => window.alert(message), 50);
@@ -230,7 +242,7 @@ function buildPage() {
 window.addEventListener("DOMContentLoaded", () => {
   // Initialize the UI.
   // Open the WebSocket connection and register event handlers.
-  websocket = new WebSocket("ws://localhost:8001/");
+  const websocket = new WebSocket(getWebSocketServer());
   websocket.onclose = (event) => {
     console.log('WebSocket connection closed.');
     console.log('Close code:', event.code);
