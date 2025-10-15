@@ -1,4 +1,4 @@
-import { Player } from '/player.js';
+import { Player } from '/Version BASE/player.js';
 
 
 const colors = ["red", "blue"]

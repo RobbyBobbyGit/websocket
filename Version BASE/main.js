@@ -1,5 +1,5 @@
 
-import { Game } from '/game.js'
+import { Game } from '/Version BASE/game.js'
 
 
 let keyState = {};
