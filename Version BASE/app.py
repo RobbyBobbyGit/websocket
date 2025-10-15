@@ -223,6 +223,8 @@ async def play(websocket, game, player, connected, join_key):
             await sender_task  # Await cancellation to handle any cleanup
         except asyncio.CancelledError:
             print("Periodic sender task cancelled.")
+        except UnboundLocalError:
+            print("No sender task to cancel")
 
 
 

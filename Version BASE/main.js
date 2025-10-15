@@ -183,7 +183,6 @@ function keyHandler(e){  // simple but powerful
   } 
 
   const send = {type: "update", keyState: keyState, name: game.name};
-  console.log(send);
   websocket.send(JSON.stringify(send));
 
   
