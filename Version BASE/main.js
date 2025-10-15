@@ -1,7 +1,7 @@
 
 import { Game } from '/websocket/Version BASE/game.js'
 
-
+let websocket;
 let keyState = {};
 let numPlayers = 2;
 let names = ["Bob", "Hank", "Jasper", "Jack", "Kian"];
@@ -242,7 +242,7 @@ function buildPage() {
 window.addEventListener("DOMContentLoaded", () => {
   // Initialize the UI.
   // Open the WebSocket connection and register event handlers.
-  const websocket = new WebSocket(getWebSocketServer());
+  websocket = new WebSocket(getWebSocketServer());
   websocket.onclose = (event) => {
     console.log('WebSocket connection closed.');
     console.log('Close code:', event.code);
