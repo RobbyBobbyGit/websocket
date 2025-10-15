@@ -33,7 +33,7 @@ function init() {
 
 
 function getWebSocketServer() {
-  if (window.location.host === "RobbyBobbyGit.github.io") {
+  if (window.location.host === "robbybobbygit.github.io") {
     return "wss://unusual-dennie-webgame-f558b6c5.koyeb.app/";
   } else if (window.location.host === "localhost:8000") {
     return "ws://localhost:8001/";
