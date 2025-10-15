@@ -1,0 +1,7 @@
+Notes V0.0.1 Revised:
+  + MANY comments
+  + server logs
+  + Dynamic main() method call
+    | Calls different main() based
+    | On local host vs Webhost
+  + Fixed js relative module imports
