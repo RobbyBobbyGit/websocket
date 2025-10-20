@@ -88,7 +88,6 @@ async def initGame(group, join_key, game):
         tasks.append(ws.send(combinedMessage))
         print(f"**{join_key}** Initialized client playerDAT ")
         i += 1
-    print(game.players["James"].data)
     await asyncio.gather(*tasks)
     #await asyncio.gather(*(group[i].send(json.dumps((message | {"name": names[i], "namesAll": names}))) for i in range(len(group))), return_exceptions=True)
 
@@ -220,6 +219,7 @@ async def play(websocket, game, player, connected, join_key):
             # They send back a begin packet to tell the server
             # to begin listening for updates from said non-host client
             if event["type"] == "begin":
+                print(f"**{join_key}** Client responded to start\n**{join_key}** Registering client for update listening")
                 isStarted = True
                 
 

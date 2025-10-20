@@ -9,7 +9,7 @@ let numPlayers = 2;
 let names = ["Bob", "Hank", "Jasper", "Jack", "Kian"];
 let name = ""
 let game;
-let updatePacket = {}
+//let updatePacket = {}
 
 
 
@@ -81,7 +81,7 @@ function receive() {
   websocket.addEventListener("message", ({ data }) => {
 
     const event = JSON.parse(data);
-    console.log(event)
+    //console.log(event)
 
     switch (event.type) {
 
@@ -129,9 +129,7 @@ function receive() {
       // Each tick (interval defined in app.py server definition) the server
       // broadcasts an update packet to each client
       case "update":
-        updatePacket = event
-        
-        window.requestAnimationFrame(gameLoop);
+        window.requestAnimationFrame((frame) => gameLoop(event));
         break;
 
 
@@ -225,7 +223,7 @@ function gameStart() {
 
 
 
-function gameLoop() {
+function gameLoop(updatePacket) {
   game.draw(updatePacket);
 }
 

@@ -5,6 +5,7 @@ const colors = ["red", "blue"]
 const gameArea = document.getElementById("game-area");
 
 
+
 //const canvas = document.createElement("canvas");
 //const ctx = canvas.getContext('2d');
 const assetPath = {astronaught: {static: "./assets/playerChar/astronaught.gif"}, background: {space: "./assets/background_space.jpg"}, wall: ["./assets/wall_brick.jpg"]}
@@ -90,13 +91,12 @@ export class Game {
 
 
     stateDefine(newDefine) {
-        console.log("newDefine")
-        console.log(newDefine)
         try {
             this.defined = { ...this.defined, ...newDefine};
         }
         catch (e) {
             if (e instanceof TypeError) {
+                console.log("game.stateDefine(newDefine) type error encontered");
                 return;
             }
             else {
@@ -123,7 +123,6 @@ export class Game {
 
 
     drawPlayers() {
-
         try {
             let curPlayer;
             Object.entries(this.playerData).forEach(([key, value]) => {
@@ -146,11 +145,9 @@ export class Game {
 
     drawDefined() {
 
-
         // Iterate over category objects in defined such as
         // the object containing all walls or interactables etc...
         Object.entries(this.defined).forEach(([curCategoryKey, itemsInCategory]) => {
-
             // Iterate over each item in the current category
             // of outer loop and pass all relevant information
             // into drawItem for rendering
@@ -165,10 +162,8 @@ export class Game {
 
 
     drawItem(category, item, id) {
-        console.log("drawItem")
         switch (category) {
             case "walls":
-                console.log("walls")
                 this.drawWall(item, id);
                 return;
             case "interactables":
@@ -182,6 +177,9 @@ export class Game {
 
     
     drawWall(item, id) {
+        //gameArea = document.getElementById("game-area");
+        console.log(gameArea);
+        if (!gameArea) return console.warn("gameArea not found!");
         const div = document.createElement("div");
         //const img = document.createElement("img"); //  <img src="programming.gif" alt="Computer man" style="width:48px;height:48px;"></img>
         console.log(`Drawing wall ${id} at (${item.topLeft[0]},${item.topLeft[1]}) size (${item.size[0]},${item.size[1]})`)

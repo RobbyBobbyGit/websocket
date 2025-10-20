@@ -109,7 +109,6 @@ class Game:
             player.collider.setPos([x + velX, y + velY])
             solidCollisionList = player.collideWithAny(self.solidColliders)
             if solidCollisionList != []:
-                print("coolide")
                 
                 player.collider.setPos([x, y])
 
@@ -120,7 +119,7 @@ class Game:
 
             interactCollisions = player.collideWithAny(self.interactColliders)
             if interactCollisions != []:
-                print("interactable")
+                pass
 
                 
 
