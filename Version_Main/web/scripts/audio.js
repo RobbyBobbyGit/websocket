@@ -53,7 +53,7 @@ export class AudioManager {
 
     getLocationalVolume(pos1, pos2) {
         let simpleDistance = Math.abs(pos1[0]-pos2[0]) + Math.abs(pos1[1]-pos2[1])
-        return (1 - Math.min(simpleDistance/400, 1));
+        return (1 - Math.min(simpleDistance/1000, 1));
     }
 
     unloadFileId(id) {
