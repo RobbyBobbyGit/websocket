@@ -7,6 +7,8 @@ import random
 import http
 import os
 import signal
+from game import Game
+
 
 from websockets.asyncio.server import serve
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
@@ -17,7 +19,8 @@ WATCH = {}
 numberer = 0
 nameList = ["James","Mary","John","Patricia","Robert","Jennifer","Michael","Linda","William","Elizabeth","David","Barbara","Richard","Susan","Joseph","Jessica","Thomas","Sarah","Charles","Karen","Christopher","Nancy","Daniel","Lisa","Matthew","Margaret","Anthony","Betty","Mark","Helen","Donald","Dorothy","Steven","Sandra","Paul","Ashley","Andrew","Kimberly","Joshua","Carol","Kenneth","Donna","Kevin","Michelle","Brian","Emily","George","Amanda","Edward","Melissa","Ronald","Deborah","Timothy","Stephanie","Jason","Rebecca","Jeffrey","Laura","Ryan","Cynthia","Jacob","Sharon","Gary","Kathleen","Nicholas","Amy","Eric","Shirley","Jonathan","Anna","Stephen","Angela","Larry","Ruth","Justin","Brenda","Scott","Pamela","Brandon","Nicole","Benjamin","Catherine","Samuel","Katherine","Gregory","Christine","Alexander","Samantha","Patrick","Debra","Frank","Janet","Dennis","Virginia","Jerry","Maria","Tyler","Heather","Aaron","Diane","Jose","Julie","Henry","Frances"]
 
-playerDAT = {}
+
+
 TICK_INTERVAL = 0.05
 
 
@@ -68,19 +71,24 @@ async def broadcast(group, message):
 # players to be sent back to the clients
 # this is used by the clients to create the games state
 # or more specifically the list of player() objects
-async def sendNames(group, join_key):
+# Also creates the servers version of the game state
+# with its own player objects
+async def initGame(group, join_key, game):
+
+    # send names
     names = []
     tasks = []
-    playerDAT[join_key] = {}
     message = {"type": "start"}
     names = nameList[:len(group)]
     i = 0
     for ws in group:
-        playerDAT[join_key].update({nameList[i]: {"x": random.randint(0, 400), "y": random.randint(0, 400)}})
+        initData = {nameList[i]: {"x": 0, "y": 0, "velX": 0, "velY": 0}}
+        game.addPlayer(initData)
         combinedMessage = json.dumps(message | {"name": nameList[i], "names": names})
         tasks.append(ws.send(combinedMessage))
         print(f"**{join_key}** Initialized client playerDAT ")
         i += 1
+    print(game.players["James"].data)
     await asyncio.gather(*tasks)
     #await asyncio.gather(*(group[i].send(json.dumps((message | {"name": names[i], "namesAll": names}))) for i in range(len(group))), return_exceptions=True)
 
@@ -104,7 +112,7 @@ async def sendNames(group, join_key):
 # packets
 async def start(websocket):
 
-    game = 0
+    game = Game()
     player = 0
     connected = {websocket}
 
@@ -182,7 +190,7 @@ async def join(websocket, join_key):
 # for their given websocket when the init stage
 # is passed. Play does some more initialization by
 # Waiting for the host to click start. The server will
-# then recieve a start packet and call sendNames() 
+# then recieve a start packet and call initGame() 
 # to assign all of the connected clients a name
 # Clients will then send back a "begin" packet
 # telling the play method to begin listening for game related
@@ -213,6 +221,7 @@ async def play(websocket, game, player, connected, join_key):
             # to begin listening for updates from said non-host client
             if event["type"] == "begin":
                 isStarted = True
+                
 
             # Wait for host to click start button. Server will recieve
             # a start packet when this happens which will open it up
@@ -224,8 +233,8 @@ async def play(websocket, game, player, connected, join_key):
                 if event["type"] == "start":
                     print(f"**{join_key}** Recieved start packet from host\n**{join_key}** Assigning names to clients")
                     isStarted = True
-                    await sendNames(connected, join_key)
-                    sender_task = asyncio.create_task(sendPeriodicUpdate(connected, join_key, TICK_INTERVAL)) #sendPeriodicUpdate(connected, join_key, TICK_INTERVAL)
+                    await initGame(connected, join_key, game)
+                    sender_task = asyncio.create_task(sendPeriodicUpdate(connected, join_key, game, TICK_INTERVAL)) #sendPeriodicUpdate(connected, join_key, TICK_INTERVAL)
                 else:
                     continue
 
@@ -235,7 +244,7 @@ async def play(websocket, game, player, connected, join_key):
             match event["type"]:
                     
                 case "update":
-                    await getUpdate(connected, event, join_key)
+                    await getUpdate(connected, event, join_key, game)
 
     # Exception handling for "async for message in websocket"
     # Clears up any compute used by play like sender_task
@@ -277,46 +286,15 @@ async def play(websocket, game, player, connected, join_key):
 # from a client. Changes the game state using relevant
 # information stored in "event" and broadcasts the new
 # game information back to the players using broadcast()
-async def getUpdate(connected, event, join_key):
+async def getUpdate(connected, event, join_key, game):
 
-    playerToUpdate = event["name"]
-    curPlayerInfo = playerDAT[join_key][playerToUpdate]
+    playerToUpdate = event["name"] 
+    
     keyState = event["keyState"]
 
-    
-    # Basic input handling, to be refined and moved around later
-    try:
-        if keyState["KeyW"] == True:
-            curPlayerInfo["velY"] = -25
-        else:
-            raise
-    except:
-        try:
-            if keyState["KeyS"] == True:
-                curPlayerInfo["velY"] = + 25
-            else:
-                raise
-        except:
-            curPlayerInfo["velY"] = 0
-
-    try:
-        if keyState["KeyA"] == True:
-            curPlayerInfo["velX"] = -25
-        else:
-            raise
-    except:
-        try:
-            if keyState["KeyD"] == True:
-                curPlayerInfo["velX"] = + 25
-            else:
-                raise
-        except:
-            curPlayerInfo["velX"] = 0
+    game.inputHandler(playerToUpdate, keyState)
 
 
-    
-
-    playerDAT[join_key][playerToUpdate] = curPlayerInfo
 
 
 
@@ -327,7 +305,7 @@ async def getUpdate(connected, event, join_key):
 # This looping method is started by the host when the game starts,
 # it registers all of the clients in group to recieve periodic updates
 # from the server with an interval in seconds of interval_seconds
-async def sendPeriodicUpdate(group, join_key, interval_seconds=0.05):
+async def sendPeriodicUpdate(group, join_key, game, interval_seconds=0.05):
 
     print(f"**{join_key}** Periodic client update task registered\n**{join_key}** Beginning update loop with tick interval {interval_seconds}...")
     # Loop forever
@@ -340,23 +318,15 @@ async def sendPeriodicUpdate(group, join_key, interval_seconds=0.05):
         # for future reference
         # Loops though every players data in playerDAT for the game
         # defined by join_key and modifies game state using that information
-        for curPlayerName, curPlayerData in playerDAT[join_key].items(): # playerDAT[join_key][curPlayerName]
-            try:
-                #print(f"player x: {curPlayerData["x"]} velX: {curPlayerData["velX"]} plus: {curPlayerData["x"] + curPlayerData["velX"]}")
-                curPlayerData["x"] += curPlayerData["velX"]
-            except KeyError:
-                curPlayerData["velX"] = 0
-            try:
-                playerDAT[join_key][curPlayerName]["y"] += curPlayerData["velY"]
-            except KeyError:
-                curPlayerData["velY"] = 0
-
+        updatePacket = game.buildUpdatePacket()
 
         # SEND UPDATE
         # Exceptions for server closure logs and cleanup
         try:
-            message = {"type": "update", "players": playerDAT[join_key]}
+            #message = {"type": "update", "players": playerDAT[join_key]}
+            message = updatePacket
             await broadcast(group, message)
+            game.clearChanges()
             await asyncio.sleep(interval_seconds)
         except ConnectionClosedOK:
             print("Connection closed gracefully during periodic send.")

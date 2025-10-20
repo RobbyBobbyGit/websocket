@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #020260, #0a1a43, #0f1a28);
+  color: white;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-container {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
+.menu-button {
+  display: block;
+  width: 200px;
+  margin: 10px auto;
+  padding: 12px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #295768;
+  color: white;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.menu-button:hover {
+  background-color: #2e5466;
+  transform: scale(1.05);
+}
+
+.join-section {
+  margin-top: 20px;
+}
+
+#joinCode {
+  padding: 10px;
+  width: 180px;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 10px;
+  text-align: center;
+}

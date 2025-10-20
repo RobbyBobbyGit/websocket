@@ -5,3 +5,84 @@ Notes V0.0.1 Revised:
     | Calls different main() based
     | On local host vs Webhost
   + Fixed js relative module imports
+
+
+
+PLAYER data:
+-----------
+{
+  x: num, 
+  y: num, 
+  velX: num, 
+  velY: num
+}
+
+Wall data:
+----------
+{
+  topLeft: [x, y]
+  size: [x, y]
+  collide: integer (0 for no collisions 1 for collisions)
+  style: integer
+}
+
+
+
+
+For define:
+for categories in define
+  for item in category
+    define new category thing with name (key) and data (value)
+
+in draw loop through categories in some order:
+  for item in category:
+    draw using data
+
+Update packet:
+--------------
+{
+  type: "update",
+
+  playerDAT: 
+  {
+    player1: {player 1's data}, 
+    player2: {player 2's data},
+    player3: {player 3's data}
+  },
+
+  define: 
+  {
+
+    walls:
+    {
+      wall1: {wall1's data}
+      wall2: {wall2's data}
+    },
+
+    interactables:
+    {
+      button1: {button1's data}
+      lever5: {button2's data}
+    }
+
+  }
+
+
+}
+
+
+
+
+
+
+
+          for curPlayerName, curPlayerData in playerDAT[join_key].items(): # playerDAT[join_key][curPlayerName]
+            try:
+                #print(f"player x: {curPlayerData["x"]} velX: {curPlayerData["velX"]} plus: {curPlayerData["x"] + curPlayerData["velX"]}")
+                curPlayerData["x"] += curPlayerData["velX"]
+            except KeyError:
+                curPlayerData["velX"] = 0
+            try:
+                playerDAT[join_key][curPlayerName]["y"] += curPlayerData["velY"]
+            except KeyError:
+                curPlayerData["velY"] = 0

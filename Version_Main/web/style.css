@@ -1,7 +1,12 @@
 /* This is a comment in CSS */
 
 
-body { margin: 0; overflow: hidden; background-color: #f0f0f0; }
+body, html { 
+  margin: 0; 
+  padding: 0;
+  overflow: hidden; 
+  background-color: #f0f0f0; 
+}
 
 
 

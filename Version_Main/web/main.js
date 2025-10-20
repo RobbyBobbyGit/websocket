@@ -1,5 +1,5 @@
 // Module imports
-import { Game } from './game.js'
+import { Game } from './scripts/game.js'
 
 
 // Global Variables
@@ -9,9 +9,7 @@ let numPlayers = 2;
 let names = ["Bob", "Hank", "Jasper", "Jack", "Kian"];
 let name = ""
 let game;
-let playerDAT = {};
-
-
+let updatePacket = {}
 
 
 
@@ -74,7 +72,6 @@ function showMessage(message) {
 
 
 
-
 // Called on page load. Sets up event listener
 // to listen for packets from server. Uses
 // a switch case with event.type to decide
@@ -84,6 +81,7 @@ function receive() {
   websocket.addEventListener("message", ({ data }) => {
 
     const event = JSON.parse(data);
+    console.log(event)
 
     switch (event.type) {
 
@@ -131,7 +129,8 @@ function receive() {
       // Each tick (interval defined in app.py server definition) the server
       // broadcasts an update packet to each client
       case "update":
-        playerDAT = event.players;
+        updatePacket = event
+        
         window.requestAnimationFrame(gameLoop);
         break;
 
@@ -220,15 +219,14 @@ function gameStart() {
   game.createPlayerList(names, numPlayers);
 
   websocket.send(JSON.stringify({type: "begin"}));
-  window.requestAnimationFrame(gameLoop);
+  //window.requestAnimationFrame(gameLoop);
 }
+
+
 
 function gameLoop() {
-  game.draw(playerDAT);
+  game.draw(updatePacket);
 }
-
-
-
 
 
 
@@ -241,7 +239,7 @@ function gameLoop() {
 // BASE KEY HANDLER WITHOUT SPECIFICS
 // Sets keyState[e.code] to true if:
 // e.type = "keydown"
-// and false if:
+// and false if: keyState 
 // e.type != "keydown"
 // function keyHandler(e) {
 //     keyState[e.code] = e.type === "keydown";
