@@ -1,4 +1,6 @@
 import { Player } from './player.js';
+import { AudioManager, fxFiles } from './audio.js';
+
 
 
 const colors = ["red", "blue"]
@@ -26,6 +28,10 @@ export class Game {
         this.defined = {walls: {}, interactables: {}};
         this.itemDivs = {walls: {}, interactables: {}}
         this.ctx;
+        this.soundFxPlayer = new AudioManager("./assets/audio/soundFX/");
+        
+        
+
     }
 
 
@@ -112,12 +118,13 @@ export class Game {
     draw(updatePacket) {
         this.playerData = updatePacket.players;
         this.define = updatePacket.define;
-
+        this.sounds = updatePacket.sounds;
         //this.define = {walls: {wallTest: {topLeft: [100,100], size: [500, 100], style: 0}}}
 
         this.stateDefine(this.define);
         this.drawDefined()
         this.drawPlayers(this.playerData);
+        this.playSounds(this.sounds)
     }
 
 
@@ -224,6 +231,74 @@ export class Game {
     }
 
 
+    // Takes the object in the "sounds" key of the update packet
+    // Decides what audio manager to use
+    // If relevant sound is already playing, ignores that sound update
+    // If its not, decides what playback method in the audio manager to use
+    playSounds(soundPacket) {
+        Object.entries(soundPacket).forEach(([soundKey, soundInfo]) => {
+            let manager;
+            switch (soundInfo.folder) {
+                case "fx":
+                    manager = this.soundFxPlayer;
+                    break;
+                default:
+                    console.log("Unexpected error while parsing sound packet:");
+                    console.log(soundPacket)
+            }
+
+
+            if (soundInfo.stop != undefined) {
+                manager.pause(soundKey);
+                console.log(`stopping ${soundKey}`)
+            }
+
+            else if (soundInfo.event == "changepos") {
+                manager.sounds[soundKey].volume = manager.getLocationalVolume([this.getPlayerMain().x, this.getPlayerMain().y], soundInfo.pos);
+            }
+
+            else {
+                switch (soundInfo.source) {
+                    case "player":
+                        this.playSoundFromPlayer(soundKey, soundInfo, manager);
+                        break;
+                    default:
+                        console.log("Unexpected error while parsing sound packet:");
+                        console.log(soundPacket)
+                }
+            }
+
+            
+
+        });
+
+        //sounds[key] = {
+        //            "folder": "fx", 
+        //            "sound": "player_walk",
+        //            "source": "player",
+        //            "event": "walk"
+        //            "pos": [player.data["x"], player.data["y"]]
+        //            
+        //        }
+        // sounds[key] {
+        //     "folder": "fx"
+        //     "stop": true
+        // }
+    }
+
+    playSoundFromPlayer(soundKey, soundInfo, manager) {
+        let playerPos = [this.getPlayerMain().x, this.getPlayerMain().y];
+        if (manager.exists(soundKey)) {
+            console.log(`playing ${soundKey} with file ${soundInfo.sound} and path ${fxFiles[soundInfo.sound]}`)
+            manager.playLocational(soundKey, soundInfo.pos, playerPos, true);
+        }
+        else {
+            console.log(`loading ${soundKey} with file ${soundInfo.sound} and path ${fxFiles[soundInfo.sound]}`)
+            manager.loadFile(fxFiles[soundInfo.sound], soundKey);
+            manager.playLocational(soundKey, soundInfo.pos, playerPos, true);
+        }
+        
+    }
     
 }
 

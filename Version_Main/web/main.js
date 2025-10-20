@@ -217,6 +217,7 @@ function gameStart() {
   game = new Game(websocket, name);
   game.createPlayerList(names, numPlayers);
 
+
   websocket.send(JSON.stringify({type: "begin"}));
   //window.requestAnimationFrame(gameLoop);
 }

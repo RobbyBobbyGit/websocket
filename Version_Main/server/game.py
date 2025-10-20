@@ -1,5 +1,6 @@
 from collider import Collider
 from player import Player
+import random
 
 class Game:
 
@@ -46,7 +47,6 @@ class Game:
             player.data["y"] = 0
             player.data["velX"] = 0
             player.data["velY"] = 0
-            print(f"playername: {player.name} playerdata: {player.data}")
 
 
     def inputHandler(self, name, keyState):
@@ -91,12 +91,49 @@ class Game:
     def buildUpdatePacket(self):
 
         packetPlayerData = {}
+        sounds = {}
         self.moveAndCollide(packetPlayerData)
+        self.getSounds(sounds)
         
-            
-        ret = {"type": "update", "players": packetPlayerData, "define": self.changes["define"]}
+        ret = {
+            "type": "update",
+            "players": packetPlayerData,
+            "define": self.changes["define"],
+            "sounds": sounds
+        }
         return ret
     
+
+    
+    def getSounds(self, sounds):
+        for [name, player] in self.players.items(): 
+            key = name + "_walk"
+            if (player.data["velX"] != 0 or player.data["velY"] != 0):
+                if player.walking == False:
+                    sounds[key] = {
+                        "folder": "fx", 
+                        "sound": "player_walk",
+                        "source": "player",
+                        "event": "walk",
+                        "pos": [player.data["x"], player.data["y"]]
+                    }
+                    player.walking = True
+                else:
+                    sounds[key] = {
+                        "folder": "fx",
+                        "event": "changepos",
+                        "pos": [player.data["x"], player.data["y"]]
+                    }
+            elif player.walking == True:
+                sounds[key] = {
+                    "folder": "fx",
+                    "stop": True
+                }
+                player.walking = False
+            
+
+
+
 
     def moveAndCollide(self, packetPlayerData):
 
