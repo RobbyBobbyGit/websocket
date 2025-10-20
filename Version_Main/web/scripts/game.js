@@ -2,7 +2,12 @@ import { Player } from './player.js';
 
 
 const colors = ["red", "blue"]
-const gameArea = document.getElementById("game-area");
+const gameArea = document.createElement('div');
+gameArea.id = 'game-area';
+document.body.appendChild(gameArea);
+
+
+
 //const canvas = document.createElement("canvas");
 //const ctx = canvas.getContext('2d');
 const assetPath = {astronaught: {static: "./assets/playerChar/astronaught.gif"}, background: {space: "./assets/background_space.jpg"}, wall: ["./assets/wall_brick.jpg"]}

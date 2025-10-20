@@ -211,6 +211,7 @@ function gameStart() {
   elementsToRemove.forEach(element => {
     element.remove();
   });
+  document.body.classList.add("game-active");
 
   document.addEventListener("keydown",keyHandler);
   document.addEventListener("keyup",keyHandler);

@@ -1,9 +1,6 @@
-/* Space Vibe Styles for CREW'D UP */
-
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600&display=swap');
 
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
   font-family: 'Rajdhani', sans-serif;
@@ -15,8 +12,17 @@ html, body {
   overflow: hidden;
 }
 
-/* container */
-.menu-container {
+/* container setup */
+.initcontainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* card-like box */
+.init {
   text-align: center;
   background: rgba(10, 15, 31, 0.6);
   padding: 3rem 4rem;
@@ -26,7 +32,7 @@ html, body {
   transition: all 0.3s ease;
 }
 
-.menu-container:hover {
+.init:hover {
   box-shadow: 0 0 45px rgba(0, 170, 255, 0.5);
   transform: scale(1.02);
 }
@@ -38,15 +44,21 @@ html, body {
   letter-spacing: 4px;
   color: #74c0fc;
   text-shadow: 0 0 20px rgba(0, 170, 255, 0.7);
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
-/* buttons */
+/* subtext */
+.subtext {
+  font-size: 1.2rem;
+  color: #a0b9ff;
+  margin: 0.5rem 0;
+}
+
+/* button styles */
 .menu-button {
-  display: inline-block;
-  margin: 1rem;
+  margin-top: 2rem;
   padding: 0.8rem 2rem;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-family: 'Orbitron', sans-serif;
   text-transform: uppercase;
   color: #fff;
@@ -63,39 +75,7 @@ html, body {
   transform: scale(1.05);
 }
 
-/* join section */
-.join-section {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* input box */
-#joinCode {
-  padding: 0.7rem 1rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #00b4ff;
-  background: rgba(255, 255, 255, 0.1);
-  color: #e0e7ff;
-  width: 180px;
-  text-align: center;
-  outline: none;
-  transition: border 0.2s, box-shadow 0.2s;
-}
-
-#joinCode::placeholder {
-  color: #a0b9ff;
-}
-
-#joinCode:focus {
-  border-color: #00ffff;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-}
-
-/* --- Enhanced Starfield Background --- */
+/* subtle twinkle animation */
 body::before {
   content: '';
   position: absolute;
@@ -104,15 +84,39 @@ body::before {
   width: 200%;
   height: 200%;
   background: url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
-  background-size: 400px 400px; /* tighter pattern = more visible stars */
-  opacity: 0.25; /* increased from 0.1 to make them brighter */
-  filter: brightness(1.6) contrast(1.2); /* makes stars sparkle a bit */
-  animation: twinkle 45s linear infinite; /* faster movement */
-  z-index: -1;
+  opacity: 0.1;
+  animation: twinkle 60s linear infinite;
 }
 
 @keyframes twinkle {
-  from { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-25%, -25%) scale(1.02); }
-  to { transform: translate(-50%, -50%) scale(1); }
+  from { transform: translate(0, 0); }
+  to { transform: translate(-50%, -50%); }
+}
+
+
+body.game-active *:not(.playerChar) {
+  all: unset;                /* removes ALL inherited styles */
+  box-sizing: border-box;    /* reapply only necessary basics */
+}
+
+body.game-active {
+  display: block;
+  margin: 0;
+  padding: 0;
+  background: #000;          /* plain black background for the game */
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;          /* hide scrollbars */
+  position: relative;        /* so absolute-positioned images work */
+  cursor: crosshair;         /* optional, looks nice for games */
+}
+
+.playerChar {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 4px;
+  cursor: grab;
+  image-rendering: pixelated;
+  transition: transform 0.1s;
 }
