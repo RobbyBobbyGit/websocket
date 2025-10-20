@@ -2,10 +2,7 @@ import { Player } from './player.js';
 
 
 const colors = ["red", "blue"]
-const gameArea = document.createElement('div');
-gameArea.id = 'game-area';
-document.body.appendChild(gameArea);
-
+const gameArea = document.getElementById("game-area");
 
 
 //const canvas = document.createElement("canvas");
